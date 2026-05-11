@@ -1,12 +1,29 @@
 import type { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
+import { PortableText } from "@portabletext/react";
 import Comment from "../../components/comment";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
-import { getAllPosts, getPostBySlug } from "../../lib/getPost";
-import markdownToHtml from "../../lib/markdownToHtml";
+import { getPostBySlug, getPostSlugs, urlFor } from "../../lib/sanity";
 import Head from "next/head";
+import Image from "next/image";
+
+const portableTextComponents = {
+  types: {
+    image: ({ value }: { value: { asset: any; alt?: string } }) => (
+      <div className="my-8">
+        <Image
+          src={urlFor(value).width(800).url()}
+          alt={value.alt || "Post image"}
+          width={800}
+          height={450}
+          className="rounded"
+        />
+      </div>
+    ),
+  },
+};
 
 export default function PostPage({
   post,
@@ -24,7 +41,7 @@ export default function PostPage({
       </Head>
 
       {router.isFallback ? (
-        <div>Loading…</div>
+        <div>Loading...</div>
       ) : (
         <div>
           <article>
@@ -38,10 +55,24 @@ export default function PostPage({
               </time>
             </header>
 
-            <div
-              className="prose mt-10"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            {post.coverImage && (
+              <div className="mt-8">
+                <Image
+                  src={urlFor(post.coverImage).width(960).height(540).url()}
+                  alt={post.title}
+                  width={960}
+                  height={540}
+                  className="rounded"
+                />
+              </div>
+            )}
+
+            <div className="prose mt-10">
+              <PortableText
+                value={post.body || []}
+                components={portableTextComponents}
+              />
+            </div>
           </article>
 
           <Comment />
@@ -58,36 +89,25 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const post = getPostBySlug(params.slug, [
-    "slug",
-    "title",
-    "excerpt",
-    "date",
-    "content",
-  ]);
-  const content = await markdownToHtml(post.content || "");
+  const post = await getPostBySlug(params.slug);
+
+  if (!post) {
+    return { notFound: true };
+  }
 
   return {
-    props: {
-      post: {
-        ...post,
-        content,
-      },
-    },
+    props: { post },
+    revalidate: 60,
   };
 }
 
 export async function getStaticPaths() {
-  const posts = getAllPosts(["slug"]);
+  const slugs = await getPostSlugs();
 
   return {
-    paths: posts.map(({ slug }) => {
-      return {
-        params: {
-          slug,
-        },
-      };
-    }),
-    fallback: false,
+    paths: (slugs || []).map(({ slug }: { slug: string }) => ({
+      params: { slug },
+    })),
+    fallback: "blocking",
   };
 }

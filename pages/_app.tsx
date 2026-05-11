@@ -1,11 +1,19 @@
 import "tailwindcss/tailwind.css";
 
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Header from "../components/header";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const isStudio = router.pathname.startsWith("/studio");
+
+  if (isStudio) {
+    return <Component {...pageProps} />;
+  }
+
   return (
     <Auth0Provider
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}

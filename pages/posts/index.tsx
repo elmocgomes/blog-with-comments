@@ -2,9 +2,9 @@ import type { InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
-import { getAllPosts } from "../../lib/getPost";
+import { getAllPosts } from "../../lib/sanity";
 
-export default function NotePage({
+export default function PostsPage({
   allPosts,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
@@ -13,8 +13,7 @@ export default function NotePage({
         allPosts.map((post) => (
           <article key={post.slug} className="mb-10">
             <Link
-              as={`/posts/${post.slug}`}
-              href="/posts/[slug]"
+              href={`/posts/${post.slug}`}
               className="text-lg leading-6 font-bold"
             >
               {post.title}
@@ -33,9 +32,10 @@ export default function NotePage({
 }
 
 export async function getStaticProps() {
-  const allPosts = getAllPosts(["slug", "title", "excerpt", "date"]);
+  const allPosts = await getAllPosts();
 
   return {
     props: { allPosts },
+    revalidate: 60,
   };
 }
