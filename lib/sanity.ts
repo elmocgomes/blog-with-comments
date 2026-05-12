@@ -68,3 +68,35 @@ export async function getPostSlugs() {
 export async function getSiteSettings() {
   return client.fetch(siteSettingsQuery, {});
 }
+
+// Pages
+const navPagesQuery = groq`*[_type == "page"] | order(menuOrder asc) {
+  title,
+  "slug": slug.current
+}`;
+
+const pageBySlugQuery = groq`*[_type == "page" && slug.current == $slug][0] {
+  title,
+  "slug": slug.current,
+  sections[] {
+    _key,
+    heading,
+    body,
+    image,
+    imagePosition
+  }
+}`;
+
+const pageSlugsQuery = groq`*[_type == "page"] { "slug": slug.current }`;
+
+export async function getNavPages() {
+  return client.fetch(navPagesQuery, {});
+}
+
+export async function getPageBySlug(slug: string) {
+  return client.fetch(pageBySlugQuery, { slug });
+}
+
+export async function getPageSlugs() {
+  return client.fetch(pageSlugsQuery, {});
+}
