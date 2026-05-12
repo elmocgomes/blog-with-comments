@@ -1,15 +1,40 @@
 import Link from "next/link";
-import Container from "../components/container";
+import { useRouter } from "next/router";
 
-export default function Header() {
+export default function Header({ siteTitle }: { siteTitle?: string }) {
+  const router = useRouter();
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/posts", label: "Posts" },
+  ];
+
   return (
-    <header className="py-6">
-      <Container>
-        <nav className="flex space-x-4">
-          <Link href="/">About</Link>
-          <Link href="/posts">Posts</Link>
+    <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
+      <div className="container max-w-5xl mx-auto px-4 flex items-center justify-between h-16">
+        <Link href="/" className="text-lg font-bold tracking-tight text-gray-900 hover:text-gray-700 transition-colors">
+          {siteTitle ?? "My Blog"}
+        </Link>
+        <nav className="flex gap-6">
+          {links.map(({ href, label }) => {
+            const isActive =
+              href === "/" ? router.pathname === "/" : router.pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-gray-900 underline underline-offset-4"
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
-      </Container>
+      </div>
     </header>
   );
 }

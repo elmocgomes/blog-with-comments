@@ -6,6 +6,12 @@ export default defineType({
   type: "document",
   fields: [
     defineField({
+      name: "siteTitle",
+      title: "Site Title",
+      type: "string",
+      description: "Shown in the browser tab and navigation",
+    }),
+    defineField({
       name: "heroTitle",
       title: "Hero Title",
       type: "string",
@@ -14,8 +20,8 @@ export default defineType({
     defineField({
       name: "heroDescription",
       title: "Hero Description",
-      type: "text",
-      rows: 4,
+      type: "array",
+      of: [{ type: "block" }],
     }),
     defineField({
       name: "heroImage",

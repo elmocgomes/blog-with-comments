@@ -33,6 +33,7 @@ const postBySlugQuery = groq`*[_type == "post" && slug.current == $slug][0] {
 const postSlugsQuery = groq`*[_type == "post"] { "slug": slug.current }`;
 
 const siteSettingsQuery = groq`*[_type == "siteSettings"][0] {
+  siteTitle,
   heroTitle,
   heroDescription,
   heroImage

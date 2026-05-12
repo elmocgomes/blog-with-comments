@@ -5,7 +5,7 @@ import { PortableText } from "@portabletext/react";
 import Comment from "../../components/comment";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
-import { getPostBySlug, getPostSlugs, urlFor } from "../../lib/sanity";
+import { getPostBySlug, getPostSlugs, getSiteSettings, urlFor } from "../../lib/sanity";
 import Head from "next/head";
 import Image from "next/image";
 
@@ -27,6 +27,7 @@ const portableTextComponents = {
 
 export default function PostPage({
   post,
+  settings,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
 
@@ -37,7 +38,7 @@ export default function PostPage({
   return (
     <Container>
       <Head>
-        <title>{post.title} | My awesome blog</title>
+        <title>{post.title} | {settings?.siteTitle ?? "My Blog"}</title>
       </Head>
 
       {router.isFallback ? (
@@ -89,14 +90,17 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const post = await getPostBySlug(params.slug);
+  const [post, settings] = await Promise.all([
+    getPostBySlug(params.slug),
+    getSiteSettings(),
+  ]);
 
   if (!post) {
     return { notFound: true };
   }
 
   return {
-    props: { post },
+    props: { post, settings: settings ?? null },
     revalidate: 60,
   };
 }

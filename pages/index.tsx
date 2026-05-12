@@ -1,35 +1,39 @@
 import type { InferGetStaticPropsType } from "next";
-import Container from "../components/container";
 import Image from "next/image";
+import { PortableText } from "@portabletext/react";
 import { getSiteSettings, urlFor } from "../lib/sanity";
 
 export default function HomePage({
   settings,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <>
-      <Container>
-        <div className="space-y-6">
-          <h1 className="text-2xl font-bold">
+    <section className="container max-w-5xl mx-auto px-4">
+      <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+        <div className="flex-1 space-y-6">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
             {settings?.heroTitle ?? "Welcome to my blog"}
           </h1>
           {settings?.heroDescription && (
-            <p>{settings.heroDescription}</p>
+            <div className="prose prose-lg text-gray-600">
+              <PortableText value={settings.heroDescription} />
+            </div>
           )}
         </div>
-      </Container>
 
-      {settings?.heroImage && (
-        <div className="container max-w-4xl m-auto px-4 mt-20">
-          <Image
-            src={urlFor(settings.heroImage).width(960).height(640).url()}
-            alt="Hero"
-            width={960}
-            height={640}
-          />
-        </div>
-      )}
-    </>
+        {settings?.heroImage && (
+          <div className="flex-1">
+            <Image
+              src={urlFor(settings.heroImage).width(800).height(600).url()}
+              alt={settings?.heroTitle ?? "Hero"}
+              width={800}
+              height={600}
+              className="rounded-xl shadow-lg"
+              priority
+            />
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
