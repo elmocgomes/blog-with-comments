@@ -21,6 +21,12 @@ const postsQuery = groq`*[_type == "post"] | order(date desc) {
   date
 }`;
 
+const recentPostsQuery = groq`*[_type == "post"] | order(date desc) [0...7] {
+  title,
+  "slug": slug.current,
+  date
+}`;
+
 const postBySlugQuery = groq`*[_type == "post" && slug.current == $slug][0] {
   title,
   "slug": slug.current,
@@ -34,13 +40,21 @@ const postSlugsQuery = groq`*[_type == "post"] { "slug": slug.current }`;
 
 const siteSettingsQuery = groq`*[_type == "siteSettings"][0] {
   siteTitle,
-  heroTitle,
-  heroDescription,
-  heroImage
+  sections[] {
+    _key,
+    heading,
+    body,
+    image,
+    imagePosition
+  }
 }`;
 
 export async function getAllPosts() {
   return client.fetch(postsQuery, {});
+}
+
+export async function getRecentPosts() {
+  return client.fetch(recentPostsQuery, {});
 }
 
 export async function getPostBySlug(slug: string) {

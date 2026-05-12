@@ -6,7 +6,7 @@ export default function Header({ siteTitle }: { siteTitle?: string }) {
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/posts", label: "Posts" },
+    { href: "/blog", label: "Blog" },
   ];
 
   return (

@@ -13,7 +13,7 @@ export default function PostsPage({
         allPosts.map((post) => (
           <article key={post.slug} className="mb-10">
             <Link
-              href={`/posts/${post.slug}`}
+              href={`/blog/${post.slug}`}
               className="text-lg leading-6 font-bold"
             >
               {post.title}
