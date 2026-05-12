@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 type NavPage = { title: string; slug: string };
 
@@ -12,12 +15,20 @@ export default function Header({
 }) {
   const router = useRouter();
 
+  // Use server-rendered navPages as fallback, but always fetch fresh data
+  // client-side so the nav stays consistent across page navigations
+  const { data: pages } = useSWR<NavPage[]>("/api/nav", fetcher, {
+    fallbackData: navPages?.length ? navPages : undefined,
+    revalidateOnFocus: false,
+    dedupingInterval: 60000,
+  });
+
   const fixedLinks = [
     { href: "/", label: "Home" },
     { href: "/blog", label: "Blog" },
   ];
 
-  const pageLinks = (navPages ?? []).map((p) => ({
+  const pageLinks = (pages ?? []).map((p) => ({
     href: `/${p.slug}`,
     label: p.title,
   }));
