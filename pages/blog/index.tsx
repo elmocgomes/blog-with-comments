@@ -2,7 +2,7 @@ import type { InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
-import { getAllPosts, getSiteSettings } from "../../lib/sanity";
+import { getAllPosts, getNavPages, getSiteSettings } from "../../lib/sanity";
 
 export default function PostsPage({
   allPosts,
@@ -32,13 +32,14 @@ export default function PostsPage({
 }
 
 export async function getStaticProps() {
-  const [allPosts, settings] = await Promise.all([
+  const [allPosts, settings, navPages] = await Promise.all([
     getAllPosts(),
     getSiteSettings(),
+    getNavPages(),
   ]);
 
   return {
-    props: { allPosts, settings: settings ?? null },
+    props: { allPosts, settings: settings ?? null, navPages: navPages ?? [] },
     revalidate: 60,
   };
 }

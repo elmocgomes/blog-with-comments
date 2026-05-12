@@ -1,24 +1,23 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 type NavPage = { title: string; slug: string };
 
-export default function Header({ siteTitle }: { siteTitle?: string }) {
+export default function Header({
+  siteTitle,
+  navPages,
+}: {
+  siteTitle?: string;
+  navPages?: NavPage[];
+}) {
   const router = useRouter();
-  const { data: pages } = useSWR<NavPage[]>("/api/nav", fetcher, {
-    fallbackData: [],
-    revalidateOnFocus: false,
-  });
 
   const fixedLinks = [
     { href: "/", label: "Home" },
     { href: "/blog", label: "Blog" },
   ];
 
-  const pageLinks = (pages ?? []).map((p) => ({
+  const pageLinks = (navPages ?? []).map((p) => ({
     href: `/${p.slug}`,
     label: p.title,
   }));

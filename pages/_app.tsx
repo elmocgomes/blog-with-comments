@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>{siteTitle ?? "My Blog"}</title>
       </Head>
 
-      <Header siteTitle={siteTitle} />
+      <Header siteTitle={siteTitle} navPages={pageProps?.navPages} />
 
       <main className="py-14">
         <Component {...pageProps} />

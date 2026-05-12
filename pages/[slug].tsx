@@ -2,7 +2,7 @@ import type { InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
-import { getPageBySlug, getPageSlugs, getSiteSettings, urlFor } from "../lib/sanity";
+import { getPageBySlug, getPageSlugs, getNavPages, getSiteSettings, urlFor } from "../lib/sanity";
 
 export default function DynamicPage({
   page,
@@ -92,9 +92,10 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const [page, settings] = await Promise.all([
+  const [page, settings, navPages] = await Promise.all([
     getPageBySlug(params.slug),
     getSiteSettings(),
+    getNavPages(),
   ]);
 
   if (!page) {
@@ -102,7 +103,7 @@ export async function getStaticProps({ params }: Params) {
   }
 
   return {
-    props: { page, settings: settings ?? null },
+    props: { page, settings: settings ?? null, navPages: navPages ?? [] },
     revalidate: 60,
   };
 }

@@ -5,7 +5,7 @@ import { PortableText } from "@portabletext/react";
 import Comment from "../../components/comment";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
-import { getPostBySlug, getPostSlugs, getSiteSettings, urlFor } from "../../lib/sanity";
+import { getPostBySlug, getPostSlugs, getNavPages, getSiteSettings, urlFor } from "../../lib/sanity";
 import Head from "next/head";
 import Image from "next/image";
 
@@ -90,9 +90,10 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const [post, settings] = await Promise.all([
+  const [post, settings, navPages] = await Promise.all([
     getPostBySlug(params.slug),
     getSiteSettings(),
+    getNavPages(),
   ]);
 
   if (!post) {
@@ -100,7 +101,7 @@ export async function getStaticProps({ params }: Params) {
   }
 
   return {
-    props: { post, settings: settings ?? null },
+    props: { post, settings: settings ?? null, navPages: navPages ?? [] },
     revalidate: 60,
   };
 }

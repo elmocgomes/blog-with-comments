@@ -2,7 +2,7 @@ import type { InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
-import { getSiteSettings, getRecentPosts, urlFor } from "../lib/sanity";
+import { getSiteSettings, getRecentPosts, getNavPages, urlFor } from "../lib/sanity";
 import distanceToNow from "../lib/dateRelative";
 
 export default function HomePage({
@@ -115,15 +115,17 @@ export default function HomePage({
 }
 
 export async function getStaticProps() {
-  const [settings, recentPosts] = await Promise.all([
+  const [settings, recentPosts, navPages] = await Promise.all([
     getSiteSettings(),
     getRecentPosts(),
+    getNavPages(),
   ]);
 
   return {
     props: {
       settings: settings ?? null,
       recentPosts: recentPosts ?? [],
+      navPages: navPages ?? [],
     },
     revalidate: 60,
   };
