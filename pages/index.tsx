@@ -42,7 +42,7 @@ export default function HomePage({
                     alt={section.heading}
                     width={800}
                     height={600}
-                    className="rounded-xl shadow-lg"
+                    className=""
                     {...(index === 0 ? { priority: true } : {})}
                   />
                 </div>
